@@ -1,58 +1,69 @@
 import { useEffect, useState } from "react";
 import { DataType, PeerConnection } from "../utils/peer";
+import { useAtom, useSetAtom } from "jotai";
+import { connectionAtom, peerIdAtom } from "../state";
+import { ConnectionStatus } from "./connection-status.client";
 
 export function PeerHost() {
-  const [myId, setMyId] = useState<string>();
-  const [theirId, setTheirId] = useState<string>();
+  const myId = useAtom(peerIdAtom)[0];
   const [files, setFiles] = useState<FileList | null>();
 
-  async function connect() {
-    const id = await PeerConnection.startPeerSession();
+  const [connection, setConnection] = useAtom(connectionAtom);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    if (!myId) return;
 
     PeerConnection.onIncomingConnection((conn) => {
-      console.log("peer?", conn.connectionId);
-      setTheirId(conn.connectionId);
+      setConnection(conn);
+      // dispatch(addConnectionList(peerId));
+      PeerConnection.onConnectionDisconnected(conn.peer, () => {
+        setConnection(undefined);
+        // dispatch(removeConnectionList(peerId));
+      });
+      PeerConnection.onConnectionReceiveData(conn.peer, (file) => {
+        console.info(`Receiving file ${file.fileName} from ${conn.peer}`);
+        if (file.dataType === DataType.FILE) {
+          console.log(
+            file.file || "",
+            file.fileName || "fileName",
+            file.fileType
+          );
+        }
+      });
     });
-
-    setMyId(id);
-  }
+  }, [myId]);
 
   async function send() {
-    if (!files || !theirId) return;
+    if (!files || !connection) return;
 
     const file = files[0];
     const blob = new Blob([file], { type: file.type });
 
-    PeerConnection.sendConnection(theirId, {
+    PeerConnection.sendConnection(connection.peer, {
       dataType: DataType.FILE,
       file: blob,
       fileName: file.name,
       fileType: file.type,
     });
+    console.log("aaa");
   }
 
-  // useEffect(() => {
-  //   async function init() {
-  //   }
-
-  //   if (!myId) {
-  //     init();
-  //   }
-  // }, []);
+  if (!myId) return <span>connecting...</span>;
 
   return (
-    <div>
-      {!myId && <button onClick={connect}>connect</button>}
-      <span>your peer id: {myId || "not connected..."}</span>
-      {myId && (
-        <>
-          <a href={`${window.location.href}w/${myId}`} target="_blank">
-            open in tab
-          </a>
-          <input type="file" onChange={(e) => setFiles(e.target.files)} />
-          {files?.length > 0 && <button onClick={send}>send</button>}
-        </>
-      )}
+    <div className="host-container">
+      <ConnectionStatus />
+      <code>{myId}</code>
+      <a
+        href={`${window.location.href}w/${myId}`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        open in tab
+      </a>
+      <input type="file" onChange={(e) => setFiles(e.target.files)} />
+      {files?.length > 0 && <button onClick={send}>send</button>}
     </div>
   );
 }

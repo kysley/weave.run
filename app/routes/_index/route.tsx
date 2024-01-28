@@ -1,6 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
 import { PeerHost } from "../../components/peer-host.client";
 import { useParams } from "@remix-run/react";
+import { Suspense } from "react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -14,8 +15,9 @@ export default function Index() {
   console.log(params);
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>Welcome to Remix (SPA Mode)</h1>
-      <PeerHost />
+      <Suspense>
+        <PeerHost />
+      </Suspense>
     </div>
   );
 }
