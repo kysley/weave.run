@@ -1,3 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer utilities {
+  .glint {
+      box-shadow:
+          0 0 1px theme('colors.black / 20%'),
+          inset 0 1px theme('colors.white / 40%');
+  }
+
+  .squish {
+      @apply active:scale-95 transition-transform;
+  }
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -5,7 +22,7 @@
 }
 
 body {
-  background-color: rgb(78, 76, 76);
+  @apply bg-zinc-950 text-white;
 }
 
 .host-container {
