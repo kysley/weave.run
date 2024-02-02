@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DataType, PeerConnection } from "../utils/peer";
+import { DataType, MessageType, PeerConnection } from "../utils/peer";
 import { useAtom } from "jotai";
 import { connectionAtom, peerIdAtom } from "../state";
 import { ConnectionStatus } from "./connection-status.client";
@@ -9,6 +9,9 @@ import { Badge } from "./ui/badge.client";
 import { copyTextToClipboard } from "../utils/copy";
 
 export function PeerHost() {
+  const [peerConsent, setPeerConsent] = useState<"pending" | "yes" | "no">(
+    "pending"
+  );
   const myId = useAtom(peerIdAtom)[0];
   const [files, setFiles] = useState<FileList | null>();
   const [sig, setSig] = useState(() => {
@@ -32,18 +35,34 @@ export function PeerHost() {
         setConnection(undefined);
         // dispatch(removeConnectionList(peerId));
       });
-      PeerConnection.onConnectionReceiveData(conn.peer, (file) => {
-        console.info(`Receiving file ${file.fileName} from ${conn.peer}`);
-        if (file.dataType === DataType.FILE) {
+
+      PeerConnection.onConnectionReceiveData(conn.peer, (msg) => {
+        if (msg.type === MessageType.SEND_FILE) {
+          console.info(`Receiving file ${msg.data.fileName} from ${conn.peer}`);
           console.log(
-            file.file || "",
-            file.fileName || "fileName",
-            file.fileType
+            msg.data.file || "",
+            msg.data.fileName || "fileName",
+            msg.data.fileType
           );
+        } else if (msg.type === MessageType.SEND_GRANT) {
+          if (msg.data) {
+            setPeerConsent("yes");
+            return;
+          }
+          setPeerConsent("no");
         }
       });
     });
   }, [myId]);
+
+  async function request() {
+    if (!files || !connection) return;
+
+    await PeerConnection.sendConnection(connection.peer, {
+      type: MessageType.SEND_REQUEST,
+      data: undefined,
+    });
+  }
 
   async function send() {
     if (!files || !connection) return;
@@ -52,11 +71,16 @@ export function PeerHost() {
     const blob = new Blob([file], { type: file.type });
 
     PeerConnection.sendConnection(connection.peer, {
-      dataType: DataType.FILE,
-      file: blob,
-      fileName: file.name,
-      fileType: file.type,
+      type: MessageType.SEND_FILE,
+      data: {
+        dataType: DataType.FILE,
+        file: blob,
+        fileName: file.name,
+        fileType: file.type,
+      },
     });
+
+    // PeerConnection.
     console.log("aaa");
   }
 
@@ -84,11 +108,24 @@ export function PeerHost() {
         >
           open in tab
         </a> */}
-        <input type="file" onChange={(e) => setFiles(e.target.files)} />
-        {files?.length > 0 && (
-          <Button onClick={send} className="w-full">
-            send
-          </Button>
+        {connection && (
+          <>
+            <input
+              type="file"
+              onChange={(e) => {
+                request();
+                setFiles(e.target.files);
+              }}
+            />
+            {peerConsent === "pending" && (
+              <Badge intent="info">waiting for peer consent</Badge>
+            )}
+            {files?.length > 0 && peerConsent === "yes" && (
+              <Button onClick={send} className="w-full">
+                send
+              </Button>
+            )}
+          </>
         )}
         <span className="text-zinc-700 pt-5">{myId}</span>
       </Card>

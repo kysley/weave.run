@@ -1,8 +1,10 @@
-const colors = require("tailwindcss/colors");
-const { fontFamily } = require("tailwindcss/defaultTheme");
+import type { Config } from "tailwindcss";
+import colors from "tailwindcss/colors";
+import { fontFamily } from "tailwindcss/defaultTheme";
+// const colors = require("tailwindcss/colors");
+// const { fontFamily } = require("tailwindcss/defaultTheme");
 
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: ["./app/**/*.{tsx, ts}"],
   future: {
     hoverOnlyWhenSupported: true,
@@ -27,4 +29,4 @@ module.exports = {
       },
     },
   },
-};
+} satisfies Config;

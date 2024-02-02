@@ -1,5 +1,18 @@
 import Peer, { DataConnection } from "peerjs";
 
+export enum MessageType {
+  SEND_FILE = "SEND_FILE",
+  SEND_MESSAGE = "SEND_MESSAGE",
+  SEND_GRANT = "SEND_GRANT",
+  SEND_REQUEST = "SEND_REQUEST",
+}
+
+export type Message =
+  | { type: MessageType.SEND_FILE; data: Data }
+  | { type: MessageType.SEND_MESSAGE; data: string }
+  | { type: MessageType.SEND_GRANT; data: boolean }
+  | { type: MessageType.SEND_REQUEST; data: undefined };
+
 export enum DataType {
   FILE = "FILE",
   OTHER = "OTHER",
@@ -41,7 +54,7 @@ export const PeerConnection = {
         });
         peer
           .on("open", (id) => {
-            console.log("My ID: " + id);
+            console.log(`My ID: ${id}`);
             resolve(id);
           })
           .on("error", (err) => {
@@ -77,17 +90,17 @@ export const PeerConnection = {
         return;
       }
       try {
-        let conn = peer.connect(id, { reliable: true });
+        const conn = peer.connect(id, { reliable: true });
         if (!conn) {
           reject(new Error("Connection can't be established"));
         } else {
           conn
-            .on("open", function () {
-              console.log("Connect to: " + id);
+            .on("open", () => {
+              console.log(`Connect to: ${id}`);
               connectionMap.set(id, conn);
               resolve(conn);
             })
-            .on("error", function (err) {
+            .on("error", (err) => {
               console.log(err);
               reject(err);
             });
@@ -97,8 +110,8 @@ export const PeerConnection = {
       }
     }),
   onIncomingConnection: (callback: (conn: DataConnection) => void) => {
-    peer?.on("connection", function (conn) {
-      console.log("Incoming connection: " + conn.peer);
+    peer?.on("connection", (conn) => {
+      console.log(`Incoming connection: ${conn.peer}`);
       connectionMap.set(conn.peer, conn);
       callback(conn);
     });
@@ -110,42 +123,43 @@ export const PeerConnection = {
     if (!connectionMap.has(id)) {
       throw new Error("Connection didn't exist");
     }
-    let conn = connectionMap.get(id);
+    const conn = connectionMap.get(id);
     if (conn) {
-      conn.on("close", function () {
-        console.log("Connection closed: " + id);
+      conn.on("close", () => {
+        console.log(`Connection closed: ${id}`);
         connectionMap.delete(id);
         callback();
       });
     }
   },
-  sendConnection: (id: string, data: Data): Promise<void> =>
+  sendConnection: (id: string, data: Message): Promise<void> =>
     new Promise((resolve, reject) => {
       if (!connectionMap.has(id)) {
         reject(new Error("Connection didn't exist"));
       }
       try {
-        let conn = connectionMap.get(id);
+        const conn = connectionMap.get(id);
         if (conn) {
           conn.send(data);
+          // conn.
         }
       } catch (err) {
         reject(err);
       }
       resolve();
     }),
-  onConnectionReceiveData: (id: string, callback: (f: Data) => void) => {
+  onConnectionReceiveData: (id: string, callback: (f: Message) => void) => {
     if (!peer) {
       throw new Error("Peer doesn't start yet");
     }
     if (!connectionMap.has(id)) {
       throw new Error("Connection didn't exist");
     }
-    let conn = connectionMap.get(id);
+    const conn = connectionMap.get(id);
     if (conn) {
-      conn.on("data", function (receivedData) {
-        console.log("Receiving data from " + id);
-        let data = receivedData as Data;
+      conn.on("data", (receivedData) => {
+        console.log(`Receiving data from ${id}`);
+        const data = receivedData as Message;
         callback(data);
       });
     }

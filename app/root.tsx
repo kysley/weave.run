@@ -1,3 +1,4 @@
+import { cssBundleHref } from "@remix-run/css-bundle";
 import {
   Links,
   LiveReload,
@@ -6,7 +7,13 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import "./app.css";
+import type { LinksFunction } from "@remix-run/node";
+
+import "./tailwind.css";
+
+export const links: LinksFunction = () => [
+  ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+];
 
 export default function App() {
   return (
@@ -21,7 +28,7 @@ export default function App() {
         <Outlet />
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
+        {/* <LiveReload /> */}
       </body>
     </html>
   );
@@ -39,7 +46,7 @@ export function HydrateFallback() {
       <body>
         <p>Loading...</p>
         <Scripts />
-        <LiveReload />
+        {/* <LiveReload /> */}
       </body>
     </html>
   );
