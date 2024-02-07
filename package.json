@@ -19,6 +19,7 @@
     "jotai": "^2.6.4",
     "peerjs": "^1.5.2",
     "react": "18.3.0-canary-763612647-20240126",
+    "react-aria-components": "^1.0.1",
     "react-dom": "18.3.0-canary-763612647-20240126",
     "tailwind-variants": "^0.1.20"
   },

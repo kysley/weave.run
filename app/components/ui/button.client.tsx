@@ -1,3 +1,7 @@
+import {
+  Button as RACButton,
+  type ButtonProps as RACButtonProps,
+} from "react-aria-components";
 import { VariantProps, tv } from "tailwind-variants";
 import clsx from "clsx";
 
@@ -25,19 +29,21 @@ const _button = tv({
 
 type ButtonVariants = VariantProps<typeof _button>;
 
-interface ButtonProps extends ButtonVariants {
+interface ButtonProps extends ButtonVariants, RACButtonProps {
   children: React.ReactNode;
+  // Enforce this for now.
+  className: string;
 }
 
 export function Button(props: ButtonProps) {
   return (
-    <button
+    <RACButton
       {...props}
       className={clsx(_button(props), props.className)}
       type="button"
       style={{ textShadow: "#00000080 0 1px 1px" }}
     >
       {props.children}
-    </button>
+    </RACButton>
   );
 }

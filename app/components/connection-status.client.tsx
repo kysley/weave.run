@@ -1,9 +1,9 @@
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { connectionAtom } from "../state";
 import { Badge } from "./ui/badge.client";
 
 export function ConnectionStatus() {
-  const connection = useAtom(connectionAtom)[0];
+  const connection = useAtomValue(connectionAtom);
 
   if (!connection)
     return (

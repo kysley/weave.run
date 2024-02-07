@@ -1,19 +1,25 @@
 import { useEffect, useState } from "react";
 import { DataType, MessageType, PeerConnection } from "../utils/peer";
-import { useAtom } from "jotai";
-import { connectionAtom, peerIdAtom } from "../state";
+import { useAtom, useAtomValue } from "jotai";
+import { connectionAtom, myPeerIdAtom, peerConsentAtom } from "../state";
 import { ConnectionStatus } from "./connection-status.client";
 import { Button } from "./ui/button.client";
 import { Card } from "./ui/card.client";
 import { Badge } from "./ui/badge.client";
 import { copyTextToClipboard } from "../utils/copy";
+import { usePeer } from "../hooks/use-peer";
+import { TransferTypeTabs } from "./transfer-type-tabs";
+import { DragAndDrop } from "./drag-and-drop";
 
 export function PeerHost() {
-  const [peerConsent, setPeerConsent] = useState<"pending" | "yes" | "no">(
-    "pending"
-  );
-  const myId = useAtom(peerIdAtom)[0];
-  const [files, setFiles] = useState<FileList | null>();
+  usePeer();
+
+  const myId = useAtomValue(myPeerIdAtom);
+  const peerConsent = useAtomValue(peerConsentAtom);
+
+  const connection = useAtomValue(connectionAtom);
+
+  const [files, setFiles] = useState<File>();
   const [sig, setSig] = useState(() => {
     const randomNumbers: number[] = [];
     for (let i = 0; i < 4; i++) {
@@ -22,44 +28,11 @@ export function PeerHost() {
     return randomNumbers;
   });
 
-  const [connection, setConnection] = useAtom(connectionAtom);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    if (!myId) return;
-
-    PeerConnection.onIncomingConnection((conn) => {
-      setConnection(conn);
-      // dispatch(addConnectionList(peerId));
-      PeerConnection.onConnectionDisconnected(conn.peer, () => {
-        setConnection(undefined);
-        // dispatch(removeConnectionList(peerId));
-      });
-
-      PeerConnection.onConnectionReceiveData(conn.peer, (msg) => {
-        if (msg.type === MessageType.SEND_FILE) {
-          console.info(`Receiving file ${msg.data.fileName} from ${conn.peer}`);
-          console.log(
-            msg.data.file || "",
-            msg.data.fileName || "fileName",
-            msg.data.fileType
-          );
-        } else if (msg.type === MessageType.SEND_GRANT) {
-          if (msg.data) {
-            setPeerConsent("yes");
-            return;
-          }
-          setPeerConsent("no");
-        }
-      });
-    });
-  }, [myId]);
-
   async function request() {
     if (!files || !connection) return;
 
     await PeerConnection.sendConnection(connection.peer, {
-      type: MessageType.SEND_REQUEST,
+      type: MessageType.CONSENT_REQUEST,
       data: undefined,
     });
   }
@@ -67,11 +40,11 @@ export function PeerHost() {
   async function send() {
     if (!files || !connection) return;
 
-    const file = files[0];
+    const file = files;
     const blob = new Blob([file], { type: file.type });
 
     PeerConnection.sendConnection(connection.peer, {
-      type: MessageType.SEND_FILE,
+      type: MessageType.FILE,
       data: {
         dataType: DataType.FILE,
         file: blob,
@@ -79,50 +52,41 @@ export function PeerHost() {
         fileType: file.type,
       },
     });
-
-    // PeerConnection.
-    console.log("aaa");
   }
 
   if (!myId) return <span>connecting...</span>;
 
+  const hasConsent = peerConsent === "yes";
+
   return (
     <div className="host-container">
-      <Card className="w-[30vw] flex gap-10">
+      <Card className="sm:w-[80vw] md:w-[50vw] flex gap-10">
         <div className="flex justify-between w-full">
-          <ConnectionStatus />
-          <code className="text-2xl">{sig.map((n) => n).join("")}</code>
+          <div>
+            <ConnectionStatus />
+            {files && peerConsent === "pending" && (
+              <Badge intent="info">Waiting for peer consent</Badge>
+            )}
+          </div>
+          <Button
+            variant="tertiary"
+            onClick={() =>
+              copyTextToClipboard(`${window.location.href}w/${myId}`)
+            }
+          >
+            Copy invite link
+          </Button>
+          {/* <code className="text-2xl">{sig.map((n) => n).join("")}</code> */}
         </div>
-        <Button
-          variant="tertiary"
-          onClick={() =>
-            copyTextToClipboard(`${window.location.href}w/${myId}`)
-          }
-        >
-          Copy invite link
-        </Button>
-        {/* <a
-          href={`${window.location.href}w/${myId}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          open in tab
-        </a> */}
+        <TransferTypeTabs />
         {connection && (
           <>
-            <input
-              type="file"
-              onChange={(e) => {
-                request();
-                setFiles(e.target.files);
-              }}
-            />
-            {peerConsent === "pending" && (
-              <Badge intent="info">waiting for peer consent</Badge>
-            )}
-            {files?.length > 0 && peerConsent === "yes" && (
+            <DragAndDrop onFileChange={(files) => setFiles(files[0])} />
+
+            {files && (
+              // <Button onClick={send} className="w-full" disabled={!hasConsent}>
               <Button onClick={send} className="w-full">
-                send
+                {hasConsent ? "Send to peer" : "Waiting for peer consent"}
               </Button>
             )}
           </>

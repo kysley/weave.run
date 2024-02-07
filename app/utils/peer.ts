@@ -1,17 +1,17 @@
 import Peer, { DataConnection } from "peerjs";
 
 export enum MessageType {
-  SEND_FILE = "SEND_FILE",
-  SEND_MESSAGE = "SEND_MESSAGE",
-  SEND_GRANT = "SEND_GRANT",
-  SEND_REQUEST = "SEND_REQUEST",
+  FILE = "FILE",
+  MESSAGE = "MESSAGE",
+  CONSENT_GRANT = "SEND_GRANT",
+  CONSENT_REQUEST = "SEND_REQUEST",
 }
 
 export type Message =
-  | { type: MessageType.SEND_FILE; data: Data }
-  | { type: MessageType.SEND_MESSAGE; data: string }
-  | { type: MessageType.SEND_GRANT; data: boolean }
-  | { type: MessageType.SEND_REQUEST; data: undefined };
+  | { type: MessageType.FILE; data: Data }
+  | { type: MessageType.MESSAGE; data: string }
+  | { type: MessageType.CONSENT_GRANT; data: boolean }
+  | { type: MessageType.CONSENT_REQUEST; data: undefined };
 
 export enum DataType {
   FILE = "FILE",
@@ -39,17 +39,40 @@ export const PeerConnection = {
         peer = new Peer({
           config: {
             iceServers: [
-              // { urls: "stun:stun2.1.google.com:19302" },
-              { urls: "stun:stun.l.google.com:19302" },
-              { urls: "stun:stun1.l.google.com:19302" },
-              { urls: "stun:stun2.l.google.com:19302" },
-              { urls: "stun:stun3.l.google.com:19302" },
-              { urls: "stun:stun4.l.google.com:19302" },
-              { urls: "stun:stun.ekiga.net" },
-              { urls: "stun:stun.stunprotocol.org:3478" },
-              { urls: "stun:stun.voipbuster.com" },
-              { urls: "stun:stun.voipstunt.com" },
+              { urls: "stun:stun.relay.metered.ca:80" },
+              {
+                urls: "turn:standard.relay.metered.ca:80",
+                username: "3d0dbdf2bbb5db83c481d060",
+                credential: "Mv7oZNuZ+R30UQsH",
+              },
+              {
+                urls: "turn:standard.relay.metered.ca:80?transport=tcp",
+                username: "3d0dbdf2bbb5db83c481d060",
+                credential: "Mv7oZNuZ+R30UQsH",
+              },
+              {
+                urls: "turn:standard.relay.metered.ca:443",
+                username: "3d0dbdf2bbb5db83c481d060",
+                credential: "Mv7oZNuZ+R30UQsH",
+              },
+              {
+                urls: "turns:standard.relay.metered.ca:443?transport=tcp",
+                username: "3d0dbdf2bbb5db83c481d060",
+                credential: "Mv7oZNuZ+R30UQsH",
+              },
             ],
+            // iceServers: [
+            //   // { urls: "stun:stun2.1.google.com:19302" },
+            //   { urls: "stun:stun.l.google.com:19302" },
+            //   { urls: "stun:stun1.l.google.com:19302" },
+            //   { urls: "stun:stun2.l.google.com:19302" },
+            //   { urls: "stun:stun3.l.google.com:19302" },
+            //   { urls: "stun:stun4.l.google.com:19302" },
+            //   { urls: "stun:stun.ekiga.net" },
+            //   { urls: "stun:stun.stunprotocol.org:3478" },
+            //   { urls: "stun:stun.voipbuster.com" },
+            //   { urls: "stun:stun.voipstunt.com" },
+            // ],
           },
         });
         peer

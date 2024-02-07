@@ -3,15 +3,20 @@ import type Peer from "peerjs";
 import { PeerConnection } from "../utils/peer";
 import { type DataConnection } from "peerjs";
 
-// export const peerIdAtom = atom<string | null>(null);
+// Null is loading/pending
+type PeerConsent = "yes" | "no" | "pending" | undefined;
 
-export const peerIdAtom = atom(async () => {
+export const myConsentAtom = atom<PeerConsent>(undefined);
+
+export const peerConsentAtom = atom<PeerConsent>(undefined);
+
+export const myPeerIdAtom = atom(async () => {
   const id = await PeerConnection.startPeerSession();
   return id;
 });
 
 export const shareLinkAtom = atom((get) => {
-  const id = get(peerIdAtom);
+  const id = get(myPeerIdAtom);
   return id ? `${window.location.origin}/w/${id}` : null;
 });
 
