@@ -1,16 +1,14 @@
 import { atom } from "jotai";
-import type Peer from "peerjs";
-import { PeerConnection } from "../utils/peer";
+import { Data, PeerConnection } from "../utils/peer";
 import { type DataConnection } from "peerjs";
 
-// Null is loading/pending
 type PeerConsent = "yes" | "no" | "pending" | undefined;
 
 export const myConsentAtom = atom<PeerConsent>(undefined);
 
 export const peerConsentAtom = atom<PeerConsent>(undefined);
 
-export const peerDataAtom = atom<File | string | undefined>(undefined);
+export const peerDataAtom = atom<Data | undefined>(undefined);
 
 export const myPeerIdAtom = atom(async () => {
   const id = await PeerConnection.startPeerSession();

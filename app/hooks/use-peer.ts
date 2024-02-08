@@ -5,6 +5,7 @@ import {
   peerConsentAtom,
   myPeerIdAtom,
   myConsentAtom,
+  peerDataAtom,
 } from "../state";
 import { MessageType, PeerConnection } from "../utils/peer";
 
@@ -13,6 +14,7 @@ export function usePeer() {
   const [connection, setConnection] = useAtom(connectionAtom);
   const setPeerConsent = useSetAtom(peerConsentAtom);
   const setMyConsent = useSetAtom(myConsentAtom);
+  const setPeerData = useSetAtom(peerDataAtom);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
@@ -34,11 +36,8 @@ export function usePeer() {
         console.info(
           `Receiving file ${msg.data.fileName} from ${connection.peer}`
         );
-        console.log(
-          msg.data.file || "",
-          msg.data.fileName || "fileName",
-          msg.data.fileType
-        );
+
+        setPeerData(msg.data);
       } else if (msg.type === MessageType.CONSENT_GRANT) {
         if (msg.data) {
           setPeerConsent(msg.data ? "yes" : "no");
