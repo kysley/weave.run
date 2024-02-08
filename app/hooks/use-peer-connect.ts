@@ -16,5 +16,6 @@ export function usePeerConnect(peerId: string) {
         setConnection(conn);
       }
     }
+    connect();
   }, [peerId]);
 }

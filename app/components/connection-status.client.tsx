@@ -8,14 +8,14 @@ export function ConnectionStatus() {
   if (!connection)
     return (
       <Badge intent="warning">
-        <code>waiting for peer</code>
+        <code>Waiting for peer to connect</code>
       </Badge>
     );
 
   if (connection.peer)
     return (
       <Badge intent="success">
-        <code>connected</code>
+        <code>Connected</code>
       </Badge>
     );
 

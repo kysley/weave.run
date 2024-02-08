@@ -5,17 +5,15 @@ import { connectionAtom, myPeerIdAtom, peerConsentAtom } from "../state";
 import { ConnectionStatus } from "./connection-status.client";
 import { Button } from "./ui/button.client";
 import { Card } from "./ui/card.client";
-import { Badge } from "./ui/badge.client";
 import { copyTextToClipboard } from "../utils/copy";
 import { usePeer } from "../hooks/use-peer";
-import { TransferTypeTabs } from "./transfer-type-tabs";
-import { DragAndDrop } from "./drag-and-drop";
+import { FileTabPanel, TransferTypeTabs } from "./transfer-type-tabs";
 
 export function PeerHost() {
   usePeer();
 
   const myId = useAtomValue(myPeerIdAtom);
-  const peerConsent = useAtomValue(peerConsentAtom);
+  const [peerConsent, setPeerConsent] = useAtom(peerConsentAtom);
 
   const connection = useAtomValue(connectionAtom);
 
@@ -28,13 +26,27 @@ export function PeerHost() {
     return randomNumbers;
   });
 
+  useEffect(() => {
+    if (files) {
+      request();
+    }
+  }, [files]);
+
   async function request() {
+    // Not ready to ask for consent
     if (!files || !connection) return;
 
-    await PeerConnection.sendConnection(connection.peer, {
-      type: MessageType.CONSENT_REQUEST,
-      data: undefined,
-    });
+    // Peer has already consent, don't ask again
+    if (peerConsent !== "yes") {
+      console.log("requesting consent");
+
+      await PeerConnection.sendConnection(connection.peer, {
+        type: MessageType.CONSENT_REQUEST,
+        data: undefined,
+      });
+
+      setPeerConsent("pending");
+    }
   }
 
   async function send() {
@@ -64,13 +76,10 @@ export function PeerHost() {
         <div className="flex justify-between w-full">
           <div>
             <ConnectionStatus />
-            {files && peerConsent === "pending" && (
-              <Badge intent="info">Waiting for peer consent</Badge>
-            )}
           </div>
           <Button
             variant="tertiary"
-            onClick={() =>
+            onPress={() =>
               copyTextToClipboard(`${window.location.href}w/${myId}`)
             }
           >
@@ -78,15 +87,25 @@ export function PeerHost() {
           </Button>
           {/* <code className="text-2xl">{sig.map((n) => n).join("")}</code> */}
         </div>
-        <TransferTypeTabs />
         {connection && (
           <>
-            <DragAndDrop onFileChange={(files) => setFiles(files[0])} />
+            <TransferTypeTabs>
+              <FileTabPanel
+                onFileChange={(files) => {
+                  setFiles(files[0]);
+                  console.log(files);
+                }}
+              />
+            </TransferTypeTabs>
 
             {files && (
-              // <Button onClick={send} className="w-full" disabled={!hasConsent}>
-              <Button onClick={send} className="w-full">
-                {hasConsent ? "Send to peer" : "Waiting for peer consent"}
+              <Button
+                onPress={send}
+                className="w-full"
+                intent={hasConsent ? undefined : "warning"}
+                isDisabled={!hasConsent}
+              >
+                {hasConsent ? "Send file" : "Waiting for peer to accept"}
               </Button>
             )}
           </>

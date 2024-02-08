@@ -20,10 +20,9 @@ export function usePeer() {
 
     PeerConnection.onIncomingConnection((conn) => {
       setConnection(conn);
-      // dispatch(addConnectionList(peerId));
       PeerConnection.onConnectionDisconnected(conn.peer, () => {
         setConnection(undefined);
-        // dispatch(removeConnectionList(peerId));
+        setPeerConsent(undefined);
       });
     });
   }, [myId]);

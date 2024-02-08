@@ -2,7 +2,7 @@ import { VariantProps, tv } from "tailwind-variants";
 import clsx from "clsx";
 
 const _badge = tv({
-  base: "-my-0.5 inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-sm/5 font-medium sm:text-xs/5 forced-colors:outline",
+  base: "-my-0.5 inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-sm/5 font-medium sm:text-xs/5 forced-colors:outline self-start",
   variants: {
     intent: {
       success:

@@ -7,13 +7,16 @@ import {
 import { Button } from "./ui/button.client";
 import { useState } from "react";
 
-type DragAndDropProps = {
+export type DragAndDropProps = {
   onFileChange?(files: File[], fileNames: string[]): void;
 };
 export function DragAndDrop({ onFileChange }: DragAndDropProps) {
-  const [files, setFiles] = useState<string>();
+  const [files, setFiles] = useState<string | undefined>();
 
-  console.log(files);
+  function handleFileRemove() {
+    setFiles(undefined);
+    onFileChange?.([], []);
+  }
 
   return (
     <DropZone
@@ -32,11 +35,21 @@ export function DragAndDrop({ onFileChange }: DragAndDropProps) {
         onFileChange?.(files, filenames);
         setFiles(filenames.join(", "));
       }}
-      className="border-2 border-dashed border-zinc-500 hover:border-zinc-600 rounded-sm flex flex-col justify-center p-4"
+      className="border-2 border-dashed border-zinc-500 hover:border-zinc-600 rounded-sm flex flex-col justify-center p-4 gap-2"
     >
       <Text slot="label" className="text-center font-bold">
         {files || "Drop the file you would like to send."}
       </Text>
+
+      {files && (
+        <Button
+          variant="tertiary"
+          className="self-center"
+          onPress={handleFileRemove}
+        >
+          Remove file
+        </Button>
+      )}
 
       {!files && (
         <>

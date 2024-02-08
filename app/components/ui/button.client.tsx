@@ -6,7 +6,7 @@ import { VariantProps, tv } from "tailwind-variants";
 import clsx from "clsx";
 
 const _button = tv({
-  base: "glint squish py-1.5 px-2.5 rounded border bg-gradient-to-b font-semibold leading-none text-white text-sm",
+  base: "glint enabled:squish py-1.5 px-2.5 rounded border bg-gradient-to-b font-semibold leading-none text-white text-sm disabled:cursor-not-allowed",
   variants: {
     isLoading: {
       true: "opacity-50 pointer-events-none",
@@ -19,6 +19,7 @@ const _button = tv({
     intent: {
       danger: "border-rose-800 from-rose-500 to-rose-600",
       success: "border-green-800 from-green-500 to-green-600",
+      warning: "border-amber-800 from-amber-500 to-amber-600",
     },
   },
   defaultVariants: {
@@ -29,10 +30,12 @@ const _button = tv({
 
 type ButtonVariants = VariantProps<typeof _button>;
 
-interface ButtonProps extends ButtonVariants, RACButtonProps {
+interface ButtonProps
+  extends ButtonVariants,
+    Omit<RACButtonProps, "className"> {
   children: React.ReactNode;
   // Enforce this for now.
-  className: string;
+  className?: string;
 }
 
 export function Button(props: ButtonProps) {
