@@ -4,6 +4,8 @@ import { TextArea } from "./ui/input.client";
 import { Text } from "react-aria-components";
 import { encryptMessage } from "../utils/kdf";
 import { copyTextToClipboard } from "../utils/copy";
+import { Select } from "./ui/select";
+import { Label } from "./ui/label";
 
 export function ShareSecret() {
   const [secret, setSecret] = useState("");
@@ -16,16 +18,31 @@ export function ShareSecret() {
   });
 
   async function handleCopy() {
-    const enc = await encryptMessage(secret, "123");
+    const enc = await encryptMessage(secret, sig);
     copyTextToClipboard(`${window.location.origin}/zk/${enc}`);
   }
 
   return (
     <div className="flex flex-col w-full gap-4">
-      <Text>secret: {sig}. Valid for: 1 hour</Text>
-      <TextArea onChange={(e) => setSecret(e.target.value)} value={secret} />
+      <div className="flex flex-grow gap-4 items-end">
+        <pre className="bg-zinc-700 rounded py-1 px-2">
+          <Text>secret: {sig}</Text>
+        </pre>
+        <div>
+          <Label htmlFor="duration">Expiry</Label>
+          <Select id="duration" disabled>
+            <option value={5}>5 minutes</option>
+            <option value={60}>1 hour</option>
+          </Select>
+        </div>
+      </div>
+      <TextArea
+        onChange={(e) => setSecret(e.target.value)}
+        value={secret}
+        className="min-h-[200px]"
+      />
       <Button className="self-end" onPress={handleCopy}>
-        Copy secret link
+        Copy share link
       </Button>
     </div>
   );

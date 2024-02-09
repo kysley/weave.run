@@ -1,11 +1,5 @@
 import clsx from "clsx";
-import {
-  ComponentProps,
-  ComponentPropsWithRef,
-  ComponentPropsWithoutRef,
-  HTMLAttributes,
-  HTMLProps,
-} from "react";
+import { ComponentProps } from "react";
 import {
   TextArea as RACTextArea,
   type TextAreaProps as RACTextAreaProps,
@@ -37,7 +31,7 @@ export function TextArea(props: TextAreaProps) {
   return (
     <RACTextArea
       {...props}
-      className={clsx("block w-full outline-none", _input(props))}
+      className={clsx("w-full outline-none", _input(props))}
       style={{ textShadow: "#00000080 0 1px 1px" }}
     />
   );

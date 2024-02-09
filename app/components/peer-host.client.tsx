@@ -25,13 +25,6 @@ export function PeerHost() {
   const connection = useAtomValue(connectionAtom);
 
   const [tab, setTab] = useState("file");
-  // const [sig, setSig] = useState(() => {
-  //   const randomNumbers: number[] = [];
-  //   for (let i = 0; i < 4; i++) {
-  //     randomNumbers.push(Math.floor(Math.random() * 10));
-  //   }
-  //   return randomNumbers;
-  // });
 
   useEffect(() => {
     // Consent not required for secrets since its not a download
@@ -45,10 +38,12 @@ export function PeerHost() {
   return (
     <div className="host-container">
       <Card className="sm:w-[80vw] md:w-[50vw] flex gap-10">
-        <div className="flex justify-between w-full">
-          {!zkMode && <ConnectionStatus />}
-          {/* <code className="text-2xl">{sig.map((n) => n).join("")}</code> */}
-        </div>
+        {!zkMode && (
+          <div className="flex justify-between w-full">
+            <ConnectionStatus />
+            {/* <code className="text-2xl">{sig.map((n) => n).join("")}</code> */}
+          </div>
+        )}
         {!connection && (
           <>
             {zkMode ? (
