@@ -6,7 +6,7 @@ import { VariantProps, tv } from "tailwind-variants";
 import clsx from "clsx";
 
 const _button = tv({
-  base: "glint enabled:squish py-1.5 px-2.5 rounded border bg-gradient-to-b font-semibold leading-none text-white text-sm disabled:cursor-not-allowed",
+  base: "glint enabled:squish h-[36px] py-1.5 px-2.5 rounded border bg-gradient-to-b font-semibold leading-none text-white text-sm disabled:cursor-not-allowed disabled:opacity-75",
   variants: {
     isLoading: {
       true: "opacity-50 pointer-events-none",

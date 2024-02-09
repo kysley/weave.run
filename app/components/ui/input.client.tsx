@@ -1,28 +1,44 @@
+import clsx from "clsx";
+import {
+  ComponentProps,
+  ComponentPropsWithRef,
+  ComponentPropsWithoutRef,
+  HTMLAttributes,
+  HTMLProps,
+} from "react";
+import {
+  TextArea as RACTextArea,
+  type TextAreaProps as RACTextAreaProps,
+} from "react-aria-components";
 import { VariantProps, tv } from "tailwind-variants";
 
 const _input = tv({
-  base: "flex items-center gap-2 w-full focus-within:border-accent leading-none shadow-inner text-sm py-1 px-2.5 rounded border",
-  variants: {
-
-  },
+  base: "flex h-9 w-full bg-gradient-to-b text-white border-zinc-600 from-zinc-800 to-zinc-900 rounded-md border px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+  variants: {},
 });
 
 type InputVariants = VariantProps<typeof _input>;
 
-interface InputProps extends InputVariants {
-  children: React.ReactNode;
-}
+interface InputProps extends InputVariants, ComponentProps<"input"> {}
 
 export function Input(props: InputProps) {
   return (
-    <div className={_input(props)}>
-      <input
-        className={class="block w-full outline-none"}
-        {...props}
-        style={{ textShadow: "#00000080 0 1px 1px" }}
-      >
-        {props.children}
-      </input>
-    </div>
+    <input
+      {...props}
+      className={clsx("block", _input(props), props.className)}
+      // style={{ textShadow: "#00000080 0 1px 1px" }}
+    />
+  );
+}
+
+export type TextAreaProps = RACTextAreaProps & InputVariants;
+
+export function TextArea(props: TextAreaProps) {
+  return (
+    <RACTextArea
+      {...props}
+      className={clsx("block w-full outline-none", _input(props))}
+      style={{ textShadow: "#00000080 0 1px 1px" }}
+    />
   );
 }

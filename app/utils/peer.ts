@@ -1,14 +1,15 @@
 import Peer, { DataConnection } from "peerjs";
 
 export enum MessageType {
-  FILE = "FILE",
+  DATA = "DATA",
   MESSAGE = "MESSAGE",
   CONSENT_GRANT = "SEND_GRANT",
   CONSENT_REQUEST = "SEND_REQUEST",
+  // DATA_RECEIVED = "DATA_RECEIVED",
 }
 
 export type Message =
-  | { type: MessageType.FILE; data: Data }
+  | { type: MessageType.DATA; data: Data }
   | { type: MessageType.MESSAGE; data: string }
   | { type: MessageType.CONSENT_GRANT; data: boolean }
   | { type: MessageType.CONSENT_REQUEST; data: undefined };

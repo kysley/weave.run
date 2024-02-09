@@ -14,7 +14,8 @@ import { usePeerConnect } from "../hooks/use-peer-connect";
 import { Text } from "react-aria-components";
 import { Badge } from "./ui/badge.client";
 import { Spinner } from "./ui/spinner";
-import { PeerDataInfo } from "./peer-data-info";
+import { PeerDataDownload } from "./peer-data-download";
+import { PeerSecretDisplay } from "./peer-secret-display";
 
 export function PeerReceiver({ peerId }: { peerId: string }) {
   usePeer();
@@ -47,7 +48,7 @@ export function PeerReceiver({ peerId }: { peerId: string }) {
         <div className="flex justify-between w-full flex-col gap-4">
           <div className="flex gap-2">
             <ConnectionStatus />
-            {myConsent === "yes" && <Badge>Waiting for host</Badge>}
+            {/* {myConsent === "yes" && <Badge>Waiting for host</Badge>} */}
           </div>
           <div className="flex flex-col justify-center gap-2">
             {myConsent === "pending" && (
@@ -69,7 +70,8 @@ export function PeerReceiver({ peerId }: { peerId: string }) {
                 <Text className="text-center">Waiting for host...</Text>
               </div>
             )}
-            <PeerDataInfo />
+            {peerData && <PeerDataDownload data={peerData} />}
+            {peerData && <PeerSecretDisplay data={peerData} />}
           </div>
         </div>
         <span className="text-zinc-700 pt-5">{myId}</span>

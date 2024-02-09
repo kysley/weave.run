@@ -32,7 +32,7 @@ export function usePeer() {
   useEffect(() => {
     if (!connection) return;
     PeerConnection.onConnectionReceiveData(connection.peer, (msg) => {
-      if (msg.type === MessageType.FILE) {
+      if (msg.type === MessageType.DATA) {
         console.info(
           `Receiving file ${msg.data.fileName} from ${connection.peer}`
         );

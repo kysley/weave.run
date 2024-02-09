@@ -10,6 +10,8 @@ export const peerConsentAtom = atom<PeerConsent>(undefined);
 
 export const peerDataAtom = atom<Data | undefined>(undefined);
 
+export const transferDataAtom = atom<File | string | undefined>(undefined);
+
 export const myPeerIdAtom = atom(async () => {
   const id = await PeerConnection.startPeerSession();
   return id;
