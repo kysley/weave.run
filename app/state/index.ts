@@ -13,8 +13,16 @@ export const peerDataAtom = atom<Data | undefined>(undefined);
 export const transferDataAtom = atom<File | string | undefined>(undefined);
 
 export const myPeerIdAtom = atom(async () => {
-  const id = await PeerConnection.startPeerSession();
-  return id;
+  if (!window.navigator.onLine) {
+    return null;
+  }
+
+  try {
+    const id = await PeerConnection.startPeerSession();
+    return id;
+  } catch (e) {
+    console.log(e);
+  }
 });
 
 export const shareLinkAtom = atom((get) => {

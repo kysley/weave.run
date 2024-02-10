@@ -14,6 +14,8 @@ import {
 import { TransferButton } from "./transfer-button";
 import { usePeerTransfer } from "../hooks/use-peer-transfer";
 import { ShareSecret } from "./share-secret";
+import { Link, NavLink } from "@remix-run/react";
+import { Spinner } from "./ui/spinner";
 
 export function PeerHost() {
   usePeer();
@@ -33,66 +35,67 @@ export function PeerHost() {
     }
   }, [data]);
 
-  if (!myId) return <span>connecting...</span>;
+  // if (!myId) return <span>connecting...</span>;
 
   return (
-    <div className="host-container">
-      <Card className="sm:w-[80vw] md:w-[50vw] flex gap-10">
-        {!zkMode && (
-          <div className="flex justify-between w-full">
-            <ConnectionStatus />
-            {/* <code className="text-2xl">{sig.map((n) => n).join("")}</code> */}
-          </div>
-        )}
-        {!connection && (
-          <>
-            {zkMode ? (
-              <ShareSecret />
+    <Card className="sm:w-[80vw] md:w-[50vw] flex gap-10">
+      {!zkMode && (
+        <div className="flex justify-between w-full">
+          <ConnectionStatus />
+        </div>
+      )}
+      {!connection && (
+        <>
+          <Button
+            variant="tertiary"
+            isDisabled={!myId}
+            onPress={() =>
+              copyTextToClipboard(`${window.location.href}w/${myId}`)
+            }
+          >
+            {myId ? (
+              "Copy session invite"
             ) : (
               <>
-                <Button
-                  variant="tertiary"
-                  onPress={() =>
-                    copyTextToClipboard(`${window.location.href}w/${myId}`)
-                  }
-                >
-                  Copy session invite
-                </Button>
-                <Button onPress={() => setZkMode(true)}>
-                  Share a zero-knowledge secret
-                </Button>
+                Connecting
+                <Spinner className="w-[20px]" />
               </>
             )}
-          </>
-        )}
-        {connection && (
-          <>
-            <TransferTypeTabs
-              onSelectionChange={(key) => {
-                setTab(key as string);
-                setData(undefined);
+          </Button>
+          <Link to={"/zk"}>
+            <Button onPress={() => setZkMode(true)}>
+              Share a zero-knowledge secret
+            </Button>
+          </Link>
+        </>
+      )}
+      {connection && (
+        <>
+          <TransferTypeTabs
+            onSelectionChange={(key) => {
+              setTab(key as string);
+              setData(undefined);
+            }}
+            selectedKey={tab}
+          >
+            <FileTabPanel
+              onFileChange={(files) => {
+                console.log(files);
+                setData(files[0]);
               }}
-              selectedKey={tab}
-            >
-              <FileTabPanel
-                onFileChange={(files) => {
-                  console.log(files);
-                  setData(files[0]);
-                }}
-              />
-              <SecretTabPanel
-                value={data as string}
-                onChange={(e) => {
-                  setData(e.target.value);
-                }}
-              />
-            </TransferTypeTabs>
+            />
+            <SecretTabPanel
+              value={data as string}
+              onChange={(e) => {
+                setData(e.target.value);
+              }}
+            />
+          </TransferTypeTabs>
 
-            {(data || tab === "secret") && <TransferButton data={data} />}
-          </>
-        )}
-        <span className="text-zinc-700 pt-5">{myId}</span>
-      </Card>
-    </div>
+          {(data || tab === "secret") && <TransferButton data={data} />}
+        </>
+      )}
+      <span className="text-zinc-700 pt-5">{myId}</span>
+    </Card>
   );
 }

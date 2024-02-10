@@ -5,6 +5,8 @@ const _badge = tv({
   base: "-my-0.5 inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-sm/5 font-medium sm:text-xs/5 forced-colors:outline self-start",
   variants: {
     intent: {
+      error:
+        "bg-red-400/20 text-red-700 group-data-[hover]:bg-red-400/30 dark:bg-red-400/10 dark:text-red-300 dark:group-data-[hover]:bg-red-400/15",
       success:
         "bg-emerald-400/20 text-emerald-700 group-data-[hover]:bg-emerald-400/30 dark:bg-emerald-400/10 dark:text-emerald-300 dark:group-data-[hover]:bg-emerald-400/15",
       info: "bg-blue-400/20 text-blue-700 group-data-[hover]:bg-blue-400/30 dark:bg-blue-400/10 dark:text-blue-300 dark:group-data-[hover]:bg-blue-400/15",

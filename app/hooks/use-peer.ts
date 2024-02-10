@@ -8,8 +8,11 @@ import {
   peerDataAtom,
 } from "../state";
 import { MessageType, PeerConnection } from "../utils/peer";
+import { useInternetConnection } from "./use-internet-connection";
 
 export function usePeer() {
+  const { online } = useInternetConnection();
+
   const myId = useAtomValue(myPeerIdAtom);
   const [connection, setConnection] = useAtom(connectionAtom);
   const setPeerConsent = useSetAtom(peerConsentAtom);
@@ -18,7 +21,7 @@ export function usePeer() {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (!myId) return;
+    if (!myId || !online) return;
 
     PeerConnection.onIncomingConnection((conn) => {
       setConnection(conn);
@@ -27,10 +30,10 @@ export function usePeer() {
         setPeerConsent(undefined);
       });
     });
-  }, [myId]);
+  }, [myId, online]);
 
   useEffect(() => {
-    if (!connection) return;
+    if (!connection || !myId || !online) return;
     PeerConnection.onConnectionReceiveData(connection.peer, (msg) => {
       if (msg.type === MessageType.DATA) {
         console.info(
@@ -46,5 +49,5 @@ export function usePeer() {
         setMyConsent("pending");
       }
     });
-  }, [connection]);
+  }, [connection, myId, online]);
 }

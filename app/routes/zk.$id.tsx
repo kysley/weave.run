@@ -1,10 +1,10 @@
 import { useParams } from "@remix-run/react";
 import { useState } from "react";
-import { Card } from "../../components/ui/card.client";
-import { decryptMessage } from "../../utils/kdf";
-import { Input } from "../../components/ui/input.client";
-import { Button } from "../../components/ui/button.client";
-import { Label } from "../../components/ui/label";
+import { Card } from "../components/ui/card.client";
+import { decryptMessage } from "../utils/kdf";
+import { Input } from "../components/ui/input.client";
+import { Button } from "../components/ui/button.client";
+import { Label } from "../components/ui/label";
 import { Text } from "react-aria-components";
 
 export default function ZeroKnowledgeId() {

@@ -1,7 +1,7 @@
 import { useParams } from "@remix-run/react";
 import { useEffect } from "react";
-import { PeerConnection } from "../../utils/peer";
-import { PeerReceiver } from "../../components/peer-receiver.client";
+import { PeerConnection } from "../utils/peer";
+import { PeerReceiver } from "../components/peer-receiver.client";
 
 export default function PeerId() {
   const params = useParams();
