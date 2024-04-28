@@ -62,11 +62,9 @@ export function PeerHost() {
               </>
             )}
           </Button>
-          <Link to={"/zk"}>
-            <Button onPress={() => setZkMode(true)}>
-              Share a zero-knowledge secret
-            </Button>
-          </Link>
+          <Button asChild>
+            <Link to="/zk">Share a zero-knowledge secret</Link>
+          </Button>
         </>
       )}
       {connection && (

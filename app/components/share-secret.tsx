@@ -28,7 +28,7 @@ export function ShareSecret() {
   return (
     <Card className="sm:w-[80vw] md:w-[50vw] flex gap-10">
       <div className="flex flex-col w-full gap-4">
-        <Button variant="outline" className="self-start">
+        <Button variant="outline" className="self-start" asChild>
           <Link to="/">Back</Link>
         </Button>
         <div className="flex flex-grow gap-4 items-end">

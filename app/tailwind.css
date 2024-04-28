@@ -3,7 +3,27 @@
 @tailwind utilities;
 
 
+/* //     --color-neutral-lighten-100: #FCFCFDF7;
+//     --color-neutral-lighten-200: #FAFAFAED;
+//     --color-neutral-lighten-300: #F4F5F6D4;
+//     --color-neutral-lighten-400: #EDEEF2AB;
+//     --color-neutral-lighten-500: #E0E4F07D;
+//     --color-neutral-lighten-600: #CDD9F954;
+//     --color-neutral-lighten-700: #C7D2FF2B;
+//     --color-neutral-lighten-800: #C7C7FF0F;
+//     --color-neutral-lighten-900: #151519; */
+
 @layer utilities {
+  .glint-2 {
+    box-shadow:
+    0px 2px 12px -6px theme('colors.zinc.900'),
+    inset 0px 0px 0px 1px #D1D1FF26,
+    inset 0px 1px 0px 0px #E0E4F07D;
+    /* box-shadow: */
+    /* 0px 2px 12px -6px theme('colors.zinc.700'), */
+    /* inset 0px 0px 0px 1px theme('colors.zinc.600'), */
+    /* inset 0px 1px 0px 0px theme('colors.zinc.100'); */
+  }
   .glint {
       box-shadow:
           0 0 1px theme('colors.black / 20%'),
